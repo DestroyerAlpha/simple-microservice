@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/DestroyerAlpha/simple-microservice/api/ratings";
+
+package ratings;
+
+service RatingsService {
+    rpc SubmitRating (SubmitRatingRequest) returns (SubmitRatingResponse) {}
+}
+
+message SubmitRatingRequest {
+    string order_id = 1;
+    string food_item = 2;
+    int32 rating = 3;
+}
+
+message SubmitRatingResponse {
+    string status = 1;
+}

@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option go_package = "github.com/DestroyerAlpha/simple-microservice/api/order";
+
+package order;
+
+service OrderService {
+    rpc PlaceOrder (PlaceOrderRequest) returns (PlaceOrderResponse) {}
+    rpc GetMenu (GetMenuRequest) returns (GetMenuResponse) {}
+    rpc GetOrderDetails (GetOrderDetailsRequest) returns (GetOrderDetailsResponse) {}
+}
+
+message PlaceOrderRequest {
+    string food_item = 1;
+    string cuisine = 2;
+    int32 quantity = 3;
+}
+
+message PlaceOrderResponse {
+    string order_id = 1;
+    string status = 2;
+}
+
+message GetMenuRequest {
+    string cuisine = 1;
+}
+
+message GetMenuResponse {
+    repeated string food_items = 1;
+}
+
+message GetOrderDetailsRequest {
+    string order_id = 1;
+}
+
+message GetOrderDetailsResponse {
+    string order_id = 1;
+    string food_item = 2;
+    int32 quantity = 3;
+    string restaurant_id = 4;
+    string status = 5;
+}

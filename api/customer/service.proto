@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "github.com/DestroyerAlpha/simple-microservice/api/customer";
+
+package customer;
+
+service CustomerService {
+    rpc GetMenu (GetMenuRequest) returns (GetMenuResponse) {}
+    rpc PlaceFoodOrder (PlaceFoodOrderRequest) returns (PlaceFoodOrderResponse) {}
+    rpc ReviewFoodItem (ReviewFoodItemRequest) returns (ReviewFoodItemResponse) {}
+}
+
+message GetMenuRequest {
+    string cuisine = 1;
+}
+
+message GetMenuResponse {
+    repeated string food_items = 1;
+}
+
+message PlaceFoodOrderRequest {
+    string food_item = 1;
+    string cuisine = 2;
+    int32 quantity = 3;
+}
+
+message PlaceFoodOrderResponse {
+    string order_id = 1;
+    string status = 2;
+}
+
+message ReviewFoodItemRequest {
+    string order_id = 1;
+    string food_item = 2;
+    int32 rating = 3;
+}
+
+message ReviewFoodItemResponse {
+    string review_id = 1;
+    string status = 2;
+}

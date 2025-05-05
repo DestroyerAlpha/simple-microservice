@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option go_package = "github.com/DestroyerAlpha/simple-microservice/api/restaurant";
+
+package restaurant;
+
+service RestaurantService {
+    rpc ListRestaurants (ListRestaurantsRequest) returns (ListRestaurantsResponse) {}
+    rpc GetRestaurantDetails (GetRestaurantDetailsRequest) returns (GetRestaurantDetailsResponse) {}
+    rpc AddRestaurant (AddRestaurantRequest) returns (AddRestaurantResponse) {}
+    rpc AddRating (AddRatingRequest) returns (AddRatingResponse) {}
+}
+
+message ListRestaurantsRequest {
+    string cuisine = 1;
+}
+
+message ListRestaurantsResponse {
+    repeated string restaurant_ids = 1;
+}
+
+message GetRestaurantDetailsRequest {
+    string restaurant_id = 1;
+}
+
+message GetRestaurantDetailsResponse {
+    string restaurant_id = 1;
+    string name = 2;
+    string cuisine = 4;
+    repeated string food_items = 5;
+}
+
+message AddRestaurantRequest {
+    string name = 1;
+    string cuisine = 2;
+    repeated string food_items = 3;
+}
+
+message AddRestaurantResponse {
+    string restaurant_id = 1;
+    string status = 2;
+}
+
+message AddRatingRequest {
+    string restaurant_id = 1;
+    string food_item = 2;
+    int32 rating = 3;
+}
+
+message AddRatingResponse {
+    string status = 1;
+}

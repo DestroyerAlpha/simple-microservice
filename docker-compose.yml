@@ -1,0 +1,85 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: [ "--config=/etc/otelcol/config.yaml" ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8888:8888"   # Metrics
+      - "13133:13133" # Health check
+
+  restaurant:
+    build:
+      context: .
+      args:
+        MAIN_PATH: ./cmd/restaurant/server.go
+    container_name: restaurant
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=restaurant
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=demo
+    ports:
+      - "50054:50054"
+    depends_on:
+      - otel-collector
+
+  order:
+    build:
+      context: .
+      args:
+        MAIN_PATH: ./cmd/order/server.go
+    ports:
+      - "50052:50052"
+    container_name: order
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=order
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=demo
+    depends_on:
+      - restaurant
+      - otel-collector
+
+  ratings:
+    build:
+      context: .
+      args:
+        MAIN_PATH: ./cmd/ratings/server.go
+    ports:
+      - "50053:50053"
+    container_name: ratings
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=ratings
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=demo
+    depends_on:
+      - restaurant
+      - order
+      - otel-collector
+
+  customer:
+    build:
+      context: .
+      args:
+        MAIN_PATH: ./cmd/customer/server.go
+    container_name: customer
+    ports:
+      - "50051:50051"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=customer
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=demo
+    depends_on:
+      - order
+      - ratings
+      - otel-collector
+
+networks:
+  default:
+    name: demo
